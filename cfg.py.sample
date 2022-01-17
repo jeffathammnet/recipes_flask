@@ -1,0 +1,7 @@
+class config:
+    SQLALCHEMY_DATABASE_URI = "sqlite:///flask.db"
+    SECRET_KEY = b'\xb2\xd2\\;\x0c\x18j-{\x1b\xa3TM\x9dT\x15'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    REDIS_URL = "redis://:localhost:6379/0"
+    SSL_CERTIFICATE = "flask.crt"
+    SSL_KEY = "flask.key"
