@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="container">
+  <form method="post" id="recipe-form">
+    <div class="mb-3 mt-3">
+      <label for="title" class="form-label">Title:</label>
+      <input type="text" class="form-control" id="title" name="title" required>
+    </div>        
+    <div class="mb-3 mt-3">
+      <label for="ingredients" class="form-label">Ingredients:</label>
+      <textarea class="form-control" type="text" rows="5" name="ingredients" id="ingredients" placeholder="Put each ingrediant on its own line." required></textarea>
+    </div>
+    <div class="mb-3 mt-3">
+      <label for="directions" class="form-label">Directions:</label>
+      <textarea class="form-control" rows="5" name="directions" id="directions" placeholder="Put each step on its own line." required></textarea>
+    </div>
+    <div class="mb-3 mt-3">
+      <label for="prep-time" class="form-label">Prep Time (minutes):</label>
+      <input type="number" class="form-control" id="prep-time" name="prep-time" placeholder="0">
+    </div>
+    <div class="mb-3 mt-3">
+      <label for="cook-time" class="form-label">Cook Time (minutes):</label>
+      <input type="number" class="form-control" id="cook-time" name="cook-time" placeholder="0">
+    </div>
+    <div class="mb-3 mt-3">
+      <label for="servings" class="form-label">Servings:</label>
+      <input type="number" class="form-control" id="servings" name="servings" placeholder="0">
+    </div>
+    <div class="mb-3 mt-3 form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="healthy-bool" name="healthy-bool" value="true">
+      <label class="form-check-label" for="healthy-bool">Healthy</label>
+    </div>
+    <button type="submit" class="btn btn-success">Submit</button>
+  </form>
+
+</div>
+    
+{% endblock %}

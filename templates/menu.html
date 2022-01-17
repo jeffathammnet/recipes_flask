@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block head %}
+
+{% endblock %}
+{% block body %}
+
+<script>
+  function add_random_prompt() {
+    random_count = prompt("How many do you want to add?","1");
+    document.getElementById("add_random_count").value = random_count;
+    return True;
+  }
+  </script>
+
+<nav class="navbar navbar-expand-sm bg-secondary navbar-dark">
+  <div class="container-fluid">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <form onsubmit="add_random_prompt()" method="post">
+          <button type="submit" class="btn btn-secondary">Add random</button>
+          <input type="hidden" name="add_random_count" id="add_random_count" value="">
+        </form>
+      </li>
+      <li class="nav-item">
+        <a class="btn btn-secondary" href="/menu/shopping-list">Shopping List</a>
+      </li>      
+    </ul>
+    <form action="/menu" method="POST">
+      <button type="submit" class="btn btn-secondary">Reset menu</button>
+      <input type="hidden" name="reset_menu" id="reset_menu" value="reset_menu">
+    </form> 
+  </div>
+</nav>
+{% if j2_data.recipes %}
+<div class="row">
+  {% for recipe in j2_data.recipes %}
+  <div class="card" style="width:400px">
+    <h4 class="card-title">{{ recipe.name }}</h4>
+      <div class="card-body">
+        <h6>Ingredients</h6>
+        <ul>
+          {% for ingredient in recipe.ingredients.split("\r\n") %}
+          <li>{{ ingredient }}</li>
+          {% endfor %}
+        </ul>
+        <h6>Directions</h6>
+        <ol>
+          {% for direction in recipe.directions.split("\r\n") %}
+          <li>{{ direction }}</li>
+          {% endfor %}
+        </ol>
+      </div>
+      <div class="card-footer">
+        <form action="/menu" method="POST">
+          <button type="submit" class="btn btn-danger">Remove</button>
+          <input type="hidden" name="remove_menu_item" id="remove_menu_item" value="{{ recipe.id}}">
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+{% else %}
+Menu is empty
+{% endif %}
+{% endblock %}

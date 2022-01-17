@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block body %}
+
+{% if j2_data.single_recipe %}
+<div class="container">
+  <form action="/view" method="post" id="recipe-form">
+    <div class="mb-3 mt-3">
+      <label for="title" class="form-label">Title:</label>
+      <input type="text" class="form-control" id="title" name="title" value="{{ j2_data.single_recipe.recipe.name }}" required>
+    </div>        
+    <div class="mb-3 mt-3">
+      <label for="ingredients" class="form-label">Ingredients:</label>
+      <textarea class="form-control" type="text" rows="5" name="ingredients" id="ingredients" placeholder="Put each ingrediant on its own line." required>{{ j2_data.single_recipe.recipe.ingredients }}</textarea>
+    </div>
+    <div class="mb-3 mt-3">
+      <label for="directions" class="form-label">Directions:</label>
+      <textarea class="form-control" rows="5" name="directions" id="directions" placeholder="Put each step on its own line." required>{{ j2_data.single_recipe.recipe.directions }}</textarea>
+    </div>
+    <div class="mb-3 mt-3">
+      <label for="prep-time" class="form-label">Prep Time (minutes):</label>
+      <input type="number" class="form-control" id="prep-time" name="prep-time" value="{{ j2_data.single_recipe.recipe.prepTime }}" placeholder="0">
+    </div>
+    <div class="mb-3 mt-3">
+      <label for="cook-time" class="form-label">Cook Time (minutes):</label>
+      <input type="number" class="form-control" id="cook-time" name="cook-time" value="{{ j2_data.single_recipe.recipe.cookTime }}" placeholder="0">
+    </div>
+    <div class="mb-3 mt-3">
+      <label for="servings" class="form-label">Servings:</label>
+      <input type="number" class="form-control" id="servings" name="servings" value="{{ j2_data.single_recipe.recipe.servings }}" placeholder="0">
+    </div>
+    <div class="mb-3 mt-3 form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="healthy-bool" name="healthy-bool" value="true"  {{ 'checked' if j2_data.single_recipe.recipe.healthy }} >
+      <label class="form-check-label" for="healthy-bool">Healthy</label>
+    </div>
+    <input type="hidden" name="recipeID" id="recipeID" value="{{j2_data.single_recipe.recipe.id}}">
+    <button type="submit" class="btn btn-success">Submit</button>
+  </form>
+</div>
+{% elif j2_data.recipes %}
+<div class="row">
+  {% for recipe in j2_data.recipes %}
+  <div class="card" style="width:auto;">
+    <div class="card-header">
+      <span class="h4">{{ recipe.name }}</span>
+      {% if recipe.healthy %}
+      <span class="badge rounded-pill bg-success">Healthy</span>
+      {% endif %}
+    </div>
+
+    <div class="card-body">
+      <h6>Ingredients</h6>
+      <ul>
+        {% for ingrediant in recipe.ingredients.split("\r\n") %}
+        <li>{{ ingrediant }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="card-footer">
+      <div class="btn-group" role="group">
+        <form action="/menu" method="POST">
+          <a href="/view/{{ recipe.id }}" class="btn btn-outline-primary">View Recipe</a>
+          <button class="btn btn-outline-primary" type="submit">Add to Menu</button>
+          <input type="hidden" name="recipeID" id="recipeID" value="{{ recipe.id }}">
+        </form>
+      </div>
+    </div>
+
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
