@@ -43,7 +43,23 @@
       {% endif %}
     </div>
 
-    <div class="card-body">
+    <div class="card-body" style="min-width:350px;">
+      <table class="table table-borderless d-flex" >
+        <tbody class=>
+          <tr>
+            <td>Prep Time</td>
+            <td>{{ recipe.prepTime }} minutes</td>
+          </tr>
+          <tr>
+            <td>Cook Time</td>
+            <td>{{ recipe.cookTime }} minutes</td>
+          </tr>
+          <tr>
+            <td>Serves</td>
+            <td>{{ recipe.servings }}</td>
+          </tr>
+        </tbody>
+      </table>
       <h6>Ingredients</h6>
       <ul>
         {% for ingrediant in recipe.ingredients.split("\r\n") %}
