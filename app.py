@@ -31,7 +31,6 @@ def before_request_callback():
     #Create a session ID for the user
     if not "uid" in session:
         session['uid'] = uuid.uuid1().int
-        print (session['uid'] )
 
 @app.route("/")
 def index():
@@ -86,19 +85,27 @@ def view_id_get(recipeID):
 def view_post():
     '''Add new recipe entry to DB
     '''
-    print(request.form)
-    recipe = Recipes.query.filter(Recipes.id==request.form.get("recipeID")).first()
+
+    if request.form.get("delete"):
+        #Delete action
+        Recipes.query.filter(Recipes.id==request.form.get("recipeID")).delete()
+        db.session.commit()
+        flash("Recipe deleted successfully")
+        return redirect(url_for("view_get"))
+    else:
+        #Update Recipe
+        recipe = Recipes.query.filter(Recipes.id==request.form.get("recipeID")).first()
+
+        recipe.name = request.form.get('title')
+        recipe.healthy = True if request.form.get('healthy-bool') else False
+        recipe.prepTime = int(request.form['prep-time']) if request.form.get('prep-time').isnumeric() else 0
+        recipe.cookTime = int(request.form['cook-time']) if request.form.get('cook-time').isnumeric() else 0
+        recipe.servings = int(request.form['servings']) if request.form.get('servings').isnumeric() else 0
+        recipe.ingredients = request.form.get('ingredients')
+        recipe.directions = request.form.get('directions')
     
-    recipe.name = request.form.get('title')
-    recipe.healthy = True if request.form.get('healthy-bool') else False
-    recipe.prepTime = int(request.form['prep-time']) if request.form.get('prep-time').isnumeric() else 0
-    recipe.cookTime = int(request.form['cook-time']) if request.form.get('cook-time').isnumeric() else 0
-    recipe.servings = int(request.form['servings']) if request.form.get('servings').isnumeric() else 0
-    recipe.ingredients = request.form.get('ingredients')
-    recipe.directions = request.form.get('directions')
-    
-    db.session.commit()
-    flash("Recipe updated successfully")
+        db.session.commit()
+        flash("Recipe updated successfully")
 
     return redirect(url_for("view_get")+"/"+request.form["recipeID"])
 
@@ -114,7 +121,10 @@ def menu_get():
 
         #Query for menu item details
         for menuID in r.lrange(session['uid'],0,-1):
-            j2_data['recipes'].append(Recipes.query.filter(Recipes.id==int(menuID)).first())
+            recipe = Recipes.query.filter(Recipes.id==int(menuID)).first()
+            #Append if exists.
+            if recipe:
+                j2_data['recipes'].append(recipe)
 
     return render_template("menu.html", j2_data=j2_data)
 
@@ -130,7 +140,6 @@ def menu_shopping_list_get():
 
         #Query for menu item details
         for menuID in r.lrange(session['uid'],0,-1):
-            print( j2_data['shopping_list'])
             #Add each ingredient to shopping list
             j2_data['shopping_list'] += Recipes.query.filter(Recipes.id==int(menuID)).first().ingredients.split("\r\n")
 
