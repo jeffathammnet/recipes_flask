@@ -1,22 +1,22 @@
 {% extends 'base.html' %}
 {% block head %}
-
-{% endblock %}
-{% block body %}
-
 <script>
   function add_random_prompt() {
     random_count = prompt("How many do you want to add?","1");
     document.getElementById("add_random_count").value = random_count;
     return True;
   }
-  </script>
+</script>
+{% endblock %}
+{% block body %}
+
+
 
 <nav class="navbar navbar-expand-sm bg-secondary navbar-dark">
   <div class="container-fluid">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <form onsubmit="add_random_prompt()" method="post">
+        <form action="/menu" onsubmit="add_random_prompt()" method="post">
           <button type="submit" class="btn btn-secondary">Add random</button>
           <input type="hidden" name="add_random_count" id="add_random_count" value="">
         </form>
@@ -34,32 +34,46 @@
 {% if j2_data.recipes %}
 <div class="row">
   {% for recipe in j2_data.recipes %}
-  <div class="card" style="width:400px">
-    <h4 class="card-title">{{ recipe.name }}</h4>
-      <div class="card-body">
-        <h6>Ingredients</h6>
-        <ul>
-          {% for ingredient in recipe.ingredients.split("\r\n") %}
-          <li>{{ ingredient }}</li>
-          {% endfor %}
-        </ul>
-        <h6>Directions</h6>
-        <ol>
-          {% for direction in recipe.directions.split("\r\n") %}
-          <li>{{ direction }}</li>
-          {% endfor %}
-        </ol>
-      </div>
-      <div class="card-footer">
-        <form action="/menu" method="POST">
-          <button type="submit" class="btn btn-danger">Remove</button>
-          <input type="hidden" name="remove_menu_item" id="remove_menu_item" value="{{ recipe.id}}">
-        </form>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
 
+  <div class="card" style="width:auto;">
+    <div class="card-header">
+      <span class="h4">{{ recipe.name }}</span>
+      {% if recipe.healthy %}
+      <span class="badge rounded-pill bg-success">Healthy</span>
+      {% endif %}
+    </div>
+
+    <div class="card-body">
+      <h6>Ingredients</h6>
+      <ul>
+        {% for ingrediant in recipe.ingredients.split("\r\n") %}
+        <li>{{ ingrediant }}</li>
+        {% endfor %}
+      </ul>
+    <h6>Directions</h6>
+    <ol>
+      {% for direction in recipe.directions.split("\r\n") %}
+      <li>{{ direction }}</li>
+      {% endfor %}
+    </ol>
+    </div>
+    <div class="card-footer">
+      <form action="/menu" method="POST">
+        <button type="submit" class="btn btn-outline-danger">Remove</button>
+        <input type="hidden" name="remove_menu_item" id="remove_menu_item" value="{{ recipe.id}}">
+      </form>
+    </div>
+      
+  
+  </div>
+  {% endfor %}
+</div>
+{% elif j2_data.shopping_list %}
+{% for item in j2_data.shopping_list %}
+<ul class="list-group">
+  <li class="list-group-item">{{ item }}</li>
+</ul>
+{% endfor %}
 {% else %}
 Menu is empty
 {% endif %}

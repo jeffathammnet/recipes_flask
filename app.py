@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session
-from flask_redis import FlaskRedis
+import redis
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 import uuid
@@ -9,10 +9,9 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
 app.config['SECRET_KEY'] = config.SECRET_KEY
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = config.SQLALCHEMY_TRACK_MODIFICATIONS
-REDIS_URL = config.REDIS_URL
 
 db = SQLAlchemy(app)
-r = FlaskRedis(app)
+r = redis.Redis(host=config.REDIS_HOST, port=config.REDIS_PORT, db=0)
 
 class Recipes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -32,6 +31,7 @@ def before_request_callback():
     #Create a session ID for the user
     if not "uid" in session:
         session['uid'] = uuid.uuid1().int
+        print (session['uid'] )
 
 @app.route("/")
 def index():
@@ -115,6 +115,24 @@ def menu_get():
         #Query for menu item details
         for menuID in r.lrange(session['uid'],0,-1):
             j2_data['recipes'].append(Recipes.query.filter(Recipes.id==int(menuID)).first())
+
+    return render_template("menu.html", j2_data=j2_data)
+
+@app.route("/menu/shopping-list", methods=["GET"])
+def menu_shopping_list_get():
+    '''View menu for current user session
+    '''
+    j2_data = {}
+
+    #Validate user has items in menu
+    if r.llen(session['uid']) > 0:
+        j2_data['shopping_list'] = []
+
+        #Query for menu item details
+        for menuID in r.lrange(session['uid'],0,-1):
+            print( j2_data['shopping_list'])
+            #Add each ingredient to shopping list
+            j2_data['shopping_list'] += Recipes.query.filter(Recipes.id==int(menuID)).first().ingredients.split("\r\n")
 
     return render_template("menu.html", j2_data=j2_data)
 
